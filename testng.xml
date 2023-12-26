@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <test verbose="2" preserve-order="true" name="C:/Users/Spectre/IdeaProjects/XYZBankTests">
+        <parameter name="userVisibleText" value="Harry Potter"/>
+        <parameter name="depositAmount" value="100"/>
+        <parameter name="withdrawalAmount" value="50"/>
+        <parameter name="withdrawalBiggerAmount" value="350"/>
+        <classes>
+           <class name="TestCasesCustomer"/>
+       </classes>
+    </test>
+    <test name="Bank Manager Tests">
+        <parameter name="searchQuery" value="Harry"/>
+        <parameter name="nameSearch" value="Harry"/>
+        <parameter name="surnameSearch" value="Potter"/>
+        <parameter name="firstName" value="Laman"/>
+        <parameter name="lastName" value="Hajiyeva"/>
+        <parameter name="postCode" value="a1234"/>
+        <parameter name="currency" value="Dollar"/>
+        <classes>
+            <class name="TestCasesManager"/>
+        </classes>
+    </test>
+</suite>
