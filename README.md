@@ -37,7 +37,7 @@ Manager Tests
 
  Load Testing
 
-For load testing JMeter was used to simulate multiple users accessing the application simultaneously in different scenarios.
+For load testing JMeter was used to simulate multiple users accessing the application simultaneously in different scenarios.  index.html 
 
 Jira: https://laman-haji.atlassian.net/jira/software/projects/XB/boards/6
 
