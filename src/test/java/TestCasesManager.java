@@ -8,31 +8,38 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-public class TestCasesManager extends BaseTest{
+public class TestCasesManager extends BaseTest {
 
+    // Test case to verify the Bank Manager login functionality
     @Test(priority = 1)
-    public void bankManagerLogin(){
-        waitForElementToBeClickable(By.xpath("/html/body/div[1]/div/div[1]/button[1]")).click();
-        WebElement loginBtn=waitForElementToBeClickable(By.xpath("/html/body/div[1]/div/div[2]/div/div[1]/div[2]/button"));
+    public void bankManagerLogin() {
+        WebElement bankManagerLoginBtn = waitForElementToBeClickable(By.xpath("/html/body/div[1]/div/div[1]/button[1]"));
+        bankManagerLoginBtn.click();
+        WebElement loginBtn = waitForElementToBeClickable(By.xpath("/html/body/div[1]/div/div[2]/div/div[1]/div[2]/button"));
         loginBtn.click();
-        WebElement customerBtn=waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[1]/button[1]"));
-        Assert.assertTrue(customerBtn.isDisplayed());
+        WebElement customerBtn = waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[1]/button[1]"));
+        Assert.assertTrue(customerBtn.isDisplayed(), "Customer button should be displayed after login.");
     }
+
+    // Test case to verify the customers table row count
     @Test(priority = 2)
-    public void customersTable()  {
+    public void customersTable() {
         driver.findElement(By.xpath("/html/body/div[1]/div/div[2]/div/div[1]/button[3]")).click();
-        WebElement table=waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/div/table"));
+        WebElement table = waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/div/table"));
         List<WebElement> rows = table.findElements(By.tagName("tr"));
         int expectedRowCount = 6;
-        Assert.assertEquals(rows.size(), expectedRowCount);
+        Assert.assertEquals(rows.size(), expectedRowCount, "The number of rows in the customer table should be 6.");
     }
+
+    // Test case to search customers by name
     @Test(priority = 3)
     @Parameters("searchQuery")
-    public void customersSearchByName(String searchQuery){
-        WebElement search=waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/form/div/div/input"));
+    public void customersSearchByName(String searchQuery) {
+        WebElement search = waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/form/div/div/input"));
         search.sendKeys(searchQuery);
-        WebElement table=waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/div/table"));
+        WebElement table = waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/div/table"));
         List<WebElement> rows = table.findElements(By.tagName("tr"));
+
         for (int i = 1; i < rows.size(); i++) {
             WebElement row = rows.get(i);
             List<WebElement> columns = row.findElements(By.tagName("td"));
@@ -42,24 +49,34 @@ public class TestCasesManager extends BaseTest{
         }
         search.clear();
     }
-    @Test(priority = 4)
-    @Parameters({"nameSearch","surnameSearch"})
-    public void customersSearchByFullname(String nameSearch,String surnameSearch){
-        WebElement search=driver.findElement(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/form/div/div/input"));
-        search.sendKeys(nameSearch+" "+surnameSearch);
-        WebElement table=waitForElementToBeVisible(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/div/table"));
-        List<WebElement> rows = table.findElements(By.tagName("tr"));
-        Assert.assertNotEquals(rows.size(), 1);
-        WebElement row = rows.get(1);
-        List<WebElement> columns = row.findElements(By.tagName("td"));
-        String rowName = columns.get(0).getText();
-        String rowSurname = columns.get(1).getText();
-        boolean isNameMatch = rowName.equals(nameSearch);
-        boolean isSurnameMatch = rowSurname.equals(surnameSearch);
-        Assert.assertTrue(isNameMatch && isSurnameMatch, "Name and Surname do not match in row: " + row.getText());
 
+    // Test case to search customers by full name (first and last name)
+    @Test(priority = 4)
+    @Parameters({"nameSearch", "surnameSearch"})
+    public void customersSearchByFullname(String nameSearch, String surnameSearch) {
+        WebElement search = waitForElementToBeVisible(By.xpath("//input[@placeholder='Search Customer']"));
+        search.sendKeys(nameSearch + " " + surnameSearch);
+        WebElement table = waitForElementToBeVisible(By.xpath("//table[@class='table table-bordered table-striped']"));
+        List<WebElement> rows = table.findElements(By.xpath(".//tbody/tr"));
+        Assert.assertTrue(rows.size() > 0, "No customer records found!");
+
+        boolean isMatchFound = false;
+        for (WebElement row : rows) {
+            List<WebElement> columns = row.findElements(By.tagName("td"));
+            if (columns.size() >= 2) {
+                String rowName = columns.get(0).getText().trim();
+                String rowSurname = columns.get(1).getText().trim();
+                if (rowName.equals(nameSearch) && rowSurname.equals(surnameSearch)) {
+                    isMatchFound = true;
+                    break;
+                }
+            }
+        }
+        Assert.assertTrue(isMatchFound, "Customer with the name '" + nameSearch + " " + surnameSearch + "' not found in the table.");
         search.clear();
     }
+
+    // Test case to add a new customer
     @Test(priority = 5)
     @Parameters({"firstName","lastName","postCode"})
     public void addCustomer(String firstName,String lastName,String postCode){
@@ -98,6 +115,8 @@ public class TestCasesManager extends BaseTest{
         Assert.assertTrue(isAtLeastOneMatch, "No matching row found in the table");
         search.clear();
     }
+
+    // Test case to open an account for a customer
     @Test(priority = 6)
     @Parameters({"firstName","lastName","currency"})
     public void openAccount(String firstName,String lastname,String currency){
@@ -121,6 +140,8 @@ public class TestCasesManager extends BaseTest{
         String rowAccount = columns.get(3).getText();
         Assert.assertTrue(rowAccount != null && rowAccount.matches("-?\\d+"));//if it is numerical then true
     }
+
+    // Test case to delete a customer
     @Test(priority = 7)
     public void deleteCustomer(){
         WebElement deleteBtn=driver.findElement(By.xpath("/html/body/div[1]/div/div[2]/div/div[2]/div/div/table/tbody/tr[1]/td[5]/button"));
